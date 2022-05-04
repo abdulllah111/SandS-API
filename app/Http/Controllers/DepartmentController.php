@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\Department;
+use App\Models\Push;
+
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
@@ -44,6 +46,7 @@ class DepartmentController extends Controller
     }
     public function store(Request $request)
     {
+        
         try {
             $model = new Department();
             $model->department_name = $request->department_name;

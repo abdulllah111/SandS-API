@@ -33,6 +33,7 @@ $router->group(['prefix' => 'api'], function() use ($router){
 
     $router->get('department/{id}/groups', 'DepartmentController@getGroups');
     $router->get('subttable/getforgroupanddate/{id}/{date}', 'SubTtableController@getForIdGroupAndDate');
+    $router->get('ttable/getforteacher/{id}/{weekday}', 'TtableController@getForIdTeacherWeekday');
     $router->get('ttable/getforgroup/{id}/{weekday}', 'TtableController@getForIdGroupWeekday');
     $router->get('dgt/getforgroup/{id}', 'DisciplineGroupTeacherController@getForIdGroup');
     $router->get('ttable/fullinfo', 'TtableController@getfull');
@@ -48,9 +49,16 @@ $router->group(['prefix' => 'api'], function() use ($router){
     $router->get('ttable/{id}', 'TtableController@getone');
     $router->get('lesson/{id}', 'LessonController@getone');
     $router->get('weekday/{id}', 'WeekdayController@getone');
-
-    $router->group(['middleware' => ['auth_api'], 'prefix' => '/'], function() use ($router)
+    $router->post('teacher/login', 'TeacherController@login');
+    
+    $router->group(['middleware' => ['auth_teacher']], function() use ($router)
     {
+        $router->post('push', 'PushController@store');
+    });
+    
+    $router->group(['middleware' => ['auth_api']], function() use ($router)
+    {
+        $router->get('tokenvalid', 'ApiAutorizController@checkTokenValid');
         $router->post('group/name', 'GroupController@getForName');
         $router->post('teacher/name', 'TeacherController@getForName');
         $router->post('weekday/name', 'WeekdayController@getForName');

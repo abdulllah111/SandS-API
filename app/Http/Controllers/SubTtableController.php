@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SubTtable;
 use Illuminate\Http\Request;
 use App\Models\DisciplineGroupTeacher;
+use App\Providers\PushServiceProvider;
+use App\Models\Push;
 
 class SubTtableController extends Controller
 {
@@ -74,6 +76,12 @@ class SubTtableController extends Controller
      */
     public function store(Request $request)
     {
+        $dgt = DisciplineGroupTeacher::findOrFail($request->iddisciplinegroupteacher);
+        $push_model = Push::where('idteacher', $dgt->idteacher)->first();
+        $token = $push_model->token;
+        $push = new PushServiceProvider();
+        
+        $push->SendPush($token);
         try {
             $model = new SubTtable();
             $model->idweekday = $request->idweekday;
@@ -82,6 +90,7 @@ class SubTtableController extends Controller
             $model->iddisciplinegroupteacher = $request->iddisciplinegroupteacher;
             $model->date = $request->date;
             if ($model->save()) {
+                
                 return response()->json($model);
             }
         } catch (\Exception $e) {

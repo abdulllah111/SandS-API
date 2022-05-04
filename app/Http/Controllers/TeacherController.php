@@ -24,6 +24,11 @@ class TeacherController extends Controller
         $a = Teacher::where('name', $request->name)->first();
         return response()->json($a);
     }
+    
+     public function login(Request $request){
+        $a = Teacher::where('login', $request->login)->where('password', $request->password)->first();
+        return response()->json($a);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -43,8 +48,10 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         try {
-            $model = new TEacher();
+            $model = new Teacher();
             $model->name = $request->name;
+            $model->login = $request->login;
+            $model->password = $request->password;
             if ($model->save()) {
                 return response()->json($model);
             }

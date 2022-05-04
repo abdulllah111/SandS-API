@@ -27,7 +27,9 @@ class Teacher extends Model
 	public $timestamps = false;
 
 	protected $fillable = [
-		'name'
+		'name',
+		'login',
+		'password'
 	];
 
 	public function disciplines()

@@ -6,6 +6,7 @@ use App\Models\Ttable;
 use App\Models\SubTtable;
 use App\Models\Group;
 use App\Models\DisciplineGroupTeacher;
+use App\Models\Discipline;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -62,6 +63,28 @@ class TtableController extends Controller
          return response()->json($ttables);
     }
     
+    public function getForIdTeacherWeekday($id, $weekday, Request $request)
+    {
+        $ttt = DisciplineGroupTeacher::where('idteacher',$id)->get();
+        $tables = [];
+         foreach($ttt as $t){
+             $tt = $t->ttables;
+             foreach($tt as $ttable){
+                 if($ttable->idweekday == $weekday){
+                     $ttable->weekday;
+                     $ttable->lesson;
+                     $ttable->office;
+                     $ttable->discipline_group_teacher;
+                     $ttable->discipline_group_teacher->teacher;
+                     $ttable->discipline_group_teacher->discipline;
+                     $ttable->discipline_group_teacher->group;
+                     array_push($tables, $ttable);
+                 }
+             }
+             
+         }
+         return response()->json($tables);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -152,6 +175,7 @@ class TtableController extends Controller
         $subttables = [];
         $dgts = [];
         $groups = [];
+        $disciplinesId = [];
         $disciplines = [];
         $teachers = [];
         $colvo = 0;
@@ -166,15 +190,26 @@ class TtableController extends Controller
                 array_push($subttables, $subttable);
             }
         }
-        // $model = DisciplineGroupTeacher::all();
-        // foreach($model as $dgt){
-        //     if($dgt->group->department->iddepartment == $id){
-        //         array_push($dgts, $dgt);
-        //         array_push($groups, $dgt->group);
-        //         array_push($disciplines, $dgt->discipline);
-        //         array_push($teachers, $dgt->teacher);
-        //     } 
-        // }
+        $model = DisciplineGroupTeacher::all();
+        foreach($model as $dgt){
+            if($dgt->group->department->iddepartment == $id){
+                array_push($dgts, $dgt);
+            }
+        }
+        $model = Group::all();
+        foreach($model as $gr){
+            if($gr->department->iddepartment == $id){
+                array_push($groups, $gr);
+            }
+        }
+        $model = Discipline::all();
+        foreach($model as $dis){
+            foreach($dgts as $dgt){
+                if($dis->iddiscipline == $dgt->discipline->iddiscpline){
+                    array_push($disciplines, $dis);
+                }
+            }
+        }
         foreach($ttables as $m){
             $m->delete();
             $colvo++;
@@ -183,15 +218,25 @@ class TtableController extends Controller
             $m->delete();
             $colvo++;
         }
-        // foreach($dgts as $m){
-        //     $m->delete();$colvo++;
-        // }
-        // foreach($groups as $m){
-        //     $m->delete();$colvo++;
-        // }
-        // foreach($disciplines as $m){
-        //     $m->delete();$colvo++;
-        // }
+        foreach($dgts as $m){
+            $m->delete();$colvo++;
+        }
+        foreach($groups as $m){
+            $m->delete();$colvo++;
+        }
+        $model = Department::all();
+        $department = [];
+        foreach($model as $dep){
+            if($dep->iddepartment == $id){
+                array_push($department, $dep);
+            }
+        }
+        foreach($department as $m){
+            $m->delete();$colvo++;
+        }
+        foreach($disciplines as $m){
+            $m->delete();$colvo++;
+        }
         // foreach($teachers as $m){
         //     $m->delete();$colvo++;
         // }

@@ -81,6 +81,7 @@ $app->middleware([
  $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
      'auth_api' => \App\Http\Middleware\AuthenticateApi::class,
+     'auth_teacher' => \App\Http\Middleware\AuthenticateTeacher::class,
  ]);
 
 /*
